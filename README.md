@@ -1,6 +1,10 @@
+# benjamin fork
+
+- added deps.edn
+
 # slash
 
-A small Clojure library designed to handle and route Discord interactions, both for gateway events and incoming webhooks. 
+A small Clojure library designed to handle and route Discord interactions, both for gateway events and incoming webhooks.
 
 slash is environment-agnostic, extensible through middleware and works directly with Clojure data (no JSON parsing/printing included).
 
@@ -70,7 +74,7 @@ Examples:
      :placeholder "Language"))])
 ```
 
-## Routing 
+## Routing
 
 You can use slash to handle interaction events based on their type.
 
@@ -78,7 +82,7 @@ You can use slash to handle interaction events based on their type.
 (slash.core/route-interaction handler-map interaction-event)
 ```
 
-`handler-map` is a map containing handlers for the different types of interactions that may occur. E.g. 
+`handler-map` is a map containing handlers for the different types of interactions that may occur. E.g.
 
 ``` clojure
 {:ping ping-handler
@@ -90,12 +94,12 @@ You can find default handler maps for both gateway and webhook environments in `
 
 ### Commands
 
-slash offers further routing middleware and utilities specifically for slash commands. The API is heavily inspired by [compojure](https://github.com/weavejester/compojure). 
+slash offers further routing middleware and utilities specifically for slash commands. The API is heavily inspired by [compojure](https://github.com/weavejester/compojure).
 
 Simple, single-command example:
 
 ``` clojure
-(require '[slash.command :as cmd] 
+(require '[slash.command :as cmd]
          '[slash.response :as rsp :refer [channel-message ephemeral]]) ; The response namespace provides utility functions to create interaction responses
 
 (cmd/defhandler echo-handler
@@ -130,24 +134,24 @@ An example with multiple (sub-)commands:
                   (str/lower-case)
                   (map #(cond-> % (rand-nth [true false]) Character/toUpperCase))
                   str/join)}))
-                  
+
 (cmd/defhandler unknown-handler
   [unknown] ; Placeholders can be used in paths too
   {{{user-id :id} :user} :member} ; Using the interaction binding to get the user who ran the command
   _ ; no options
   (-> (channel-message {:content (str "I don't know the command `" unknown "`, <@" user-id ">.")})
       ephemeral))
-      
+
 (cmd/defpaths command-paths
   (cmd/group ["fun"] ; common prefix for all following commands
-    reverse-handler 
+    reverse-handler
     mock-hander
     unknown-handler))
 ```
 
 Similar to the previous example, `command-paths` can now be used as a command handler. It will call each of its nested handlers with the interaction and stop once a handler is found that does not return `nil`.
 
-### Autocomplete 
+### Autocomplete
 
 You can also use the command routing facilities to provide autocomplete for your commands.
 
@@ -157,11 +161,11 @@ You can also use the command routing facilities to provide autocomplete for your
   ["foo" "bar"]
   {{:keys [focused-option]} :data}
   [baz]
-  (case focused-option 
+  (case focused-option
     :baz (rsp/autocomplete-result (map (partial str baz) [1 2 3]))))
 ```
 
-### Full Webhook Example 
+### Full Webhook Example
 
 For this example, I use the ring webserver specification.
 
